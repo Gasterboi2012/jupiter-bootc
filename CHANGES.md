@@ -38,7 +38,6 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
 | `Containerfile` | KDE base, akmods stage, Jupiter build args, NVIDIA RPM mount, lint retained. |
 | `build_files/build.sh` | Overlay copy, identity, branding install, MOTD cleanup, Flatpaks, Steam, Vesktop, NVIDIA, Plymouth, dracut. |
 | `build_files/image-info.sh` | Testable os-release, `/etc/system-release` and `/etc/issue` rewrite. |
-| `Justfile` | `set dotenv-load := true`, the form accepted by current `just` (needed by the CI `just check`). |
 | `image-template.env` | `IMAGE_NAME=jupiter-bootc`, `REPO_ORGANIZATION=Gasterboi2012`, Jupiter description/keywords/logo. |
 | `system_files/etc/xdg/kcm-about-distrorc` | `LogoPath=jupiter`. |
 | `system_files/etc/xdg/plasma-org.kde.plasma.desktop-appletsrc` | Jupiter wallpaper default. |
@@ -138,12 +137,7 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
     Kinoite. `/etc/system-release-cpe` is left as Fedora platform CPE metadata
     for vulnerability tooling; KDE does not display it.
 
-13. **Justfile formatting.** Current `just` canonicalizes `set dotenv-load` to
-    `set dotenv-load := true`, and CI runs `just check`. The one-line setting
-    was updated; both just 1.40 and 1.46 accept it, so the check passes without
-    pinning an old `just`.
-
-14. **Flathub remote at build time.** The base image already ships the Flathub
+13. **Flathub remote at build time.** The base image already ships the Flathub
     vendor remote at `/etc/flatpak/remotes.d/flathub.flatpakrepo`. Running
     `flatpak remote-add --system` would write `/var/lib/flatpak` during the
     build; bootc applies initial `/var` content only on first install and lint
@@ -155,7 +149,9 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
 
 Static verification performed:
 
-- `just check` with just 1.40 and current just 1.46 (Justfile syntax/format).
+- `just check` with just 1.59.0, the version the CI workflow installs (Justfile
+  syntax/format). Older `just` releases format `set dotenv-load` differently,
+  so use the CI version when running the check locally.
 - `shellcheck` on `build_files/build.sh` and `build_files/image-info.sh`.
 - `shfmt -d` on both scripts.
 - `systemd-analyze verify` on `flatpak-preinstall.service` (unit parses; the

@@ -82,7 +82,9 @@ podman build --pull=newer -t jupiter-bootc:latest -f Containerfile .
 
 The Containerfile ends with `bootc container lint`, so a successful image build
 includes that lint. Shell linting is available with `just lint`, and Justfile
-syntax checking with `just check`.
+syntax checking with `just check`. Because `just`'s formatter output changes
+between releases, use the same `just` version as the CI workflow for `just
+check`.
 
 CI (`.github/workflows/build.yml`) builds this single NVIDIA image, rechunks it,
 pushes it to GHCR and signs it with the repository's `SIGNING_SECRET`. No AMD,
