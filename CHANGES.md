@@ -173,14 +173,26 @@ Static verification performed:
 - Vesktop RPM SHA-256 re-check against the pinned ARG.
 - Flathub app ID lookup and RPM Fusion Steam package presence checks.
 
-Not performed in the preparation environment:
+## CI verification
 
-- `podman build` / `just build`.
-- `bootc container lint` (it runs inside the image build).
+The `Build container image` workflow run
+[44648916590](https://github.com/Gasterboi2012/jupiter-bootc/actions/runs/44648916590)
+on commit `8d00267` completed successfully. It ran:
+
+- `Check Just Syntax`.
+- `Build Image`, which includes `podman build` / `just build` and the
+  Containerfile's `bootc container lint`.
+- `Rechunk with rpm-ostree`.
+- `Generate Build Tags` and `Tag Image`.
+- `Push To GHCR`.
+- `Install Cosign` and `Sign container image`.
+
+Still not verified:
+
 - A real first boot into Plasma, the Plymouth splash, KDE About/KInfoCenter, the
   PLM greeter, NVIDIA driver loading, and first-boot Flatpak installation.
 - Any check on AMD/Intel hardware (Jupiter is intentionally NVIDIA-only).
 
 The preparation environment had no Podman, no root privileges and no NVIDIA
-GPU, so these remain build-host and hardware checks. The image should not be
-described as release-ready until they pass.
+GPU. The image should not be described as fully release-ready until the boot
+checks pass.

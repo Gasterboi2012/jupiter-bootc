@@ -87,9 +87,11 @@ between releases, use the same `just` version as the CI workflow for `just
 check`.
 
 CI (`.github/workflows/build.yml`) builds this single NVIDIA image, rechunks it,
-pushes it to GHCR and signs it with the repository's `SIGNING_SECRET`. No AMD,
-Intel or generic image is built. Jupiter does not use the template's optional
-disk-image workflow; no installer ISO is part of Jupiter's build.
+pushes it to GHCR and signs it with the repository's `SIGNING_SECRET`. A full
+`main` run (44648916590) completed the build, lint, rechunk, push and signing
+steps successfully. No AMD, Intel or generic image is built. Jupiter does not
+use the template's optional disk-image workflow; no installer ISO is part of
+Jupiter's build.
 
 ## Rebase onto Jupiter
 
@@ -100,7 +102,8 @@ sudo bootc switch ghcr.io/gasterboi2012/jupiter-bootc:latest
 sudo reboot
 ```
 
-CI publishes the image at `ghcr.io/gasterboi2012/jupiter-bootc`.
+CI publishes the image at `ghcr.io/gasterboi2012/jupiter-bootc`. If the GHCR
+package is private, authenticate first with `sudo podman login ghcr.io`.
 
 ## Identity and branding
 
@@ -191,7 +194,9 @@ environment.
 
 The repository was prepared in an environment without Podman, root privileges
 or an NVIDIA GPU. Static checks (shell linting, config parsing, asset
-dimensions, checksums and registry lookups) were run; `just build`,
-`bootc container lint` and a real boot into Plasma were not possible there.
-Run `just build` on a build host and boot the result before treating the image
-as release-ready. See [CHANGES.md](CHANGES.md#verification).
+dimensions, checksums and registry lookups) were run. CI then built the image
+with `just build` (including `bootc container lint`), rechunked it, pushed it to
+GHCR and signed it successfully (run 44648916590). A real boot into Plasma, the
+Plymouth splash, the KDE branding and first-boot Flatpak installation remain
+unverified. Boot the published image before treating it as release-ready. See
+[CHANGES.md](CHANGES.md#verification).
