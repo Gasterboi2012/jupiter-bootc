@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Jupiter
+Description=Jupiter placeholder boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/jupiter
+ScriptFile=/usr/share/plymouth/themes/jupiter/jupiter.script
