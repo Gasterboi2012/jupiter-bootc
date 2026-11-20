@@ -25,6 +25,12 @@ ARG IMAGE_PRETTY_NAME="Jupiter"
 ARG VESKTOP_VERSION="1.7.0"
 ARG VESKTOP_SHA256="859e32db6e12345e4a1298effb2282e858ca976e3efb29e95f1a5991a22fd736"
 
+### [IM]MUTABLE /opt
+## Fedora's base symlinks /opt to /var/opt. Vesktop's RPM installs to
+## /opt/Vesktop, and bootc only applies initial /var content on first install,
+## so make /opt a real immutable directory before installing packages.
+RUN rm /opt && mkdir /opt
+
 ### MODIFICATIONS
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \

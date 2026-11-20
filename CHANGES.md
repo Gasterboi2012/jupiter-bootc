@@ -54,7 +54,7 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
 
 | Source | What it settled |
 | --- | --- |
-| `ublue-os/image-template` README | Repository layout, `ctx` build stage, `build_files/build.sh` convention, `image-template.env`, NVIDIA akmods `FROM`/mount/installer pattern, `--add ostree` dracut recipe, single-image CI. |
+| `ublue-os/image-template` README and Containerfile | Repository layout, `ctx` build stage, `build_files/build.sh` convention, `image-template.env`, NVIDIA akmods `FROM`/mount/installer pattern, `--add ostree` dracut recipe, single-image CI, and the documented `[IM]MUTABLE /opt` step. |
 | `ublue-os/akmods` README | `akmods-nvidia-open:main-44` is the open-driver akmods image; installer at `/tmp/akmods-rpms/ublue-os/nvidia-install.sh`; `IMAGE_NAME` controls optional add-ons. |
 | Universal Blue site (`universal-blue.org`) | Current documentation entry point; `docs.ublue.ai` no longer resolves. |
 | bootc filesystem documentation | OS content belongs in the image (`/usr`), `/etc` holds local configuration, `/var` must not be populated from the image. |
@@ -63,7 +63,7 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
 | `os-release(5)` | Field names and quoting; `/etc/os-release` takes precedence over `/usr/lib/os-release`; `LOGO`, `DEFAULT_HOSTNAME`, `ID_LIKE` semantics. |
 | RPM Fusion configuration and FAQ | `rpmfusion-free-release` and `rpmfusion-nonfree-release` URLs; nonfree requires free. |
 | RPM Fusion NVIDIA how-to | nvidia-open packages and OSTree kernel arguments `rd.driver.blacklist=nouveau,nova_core`; warning about `nvidia-drm.modeset=1` with RPM Fusion's own kernel package. |
-| RPM Fusion nonfree repository metadata | `steam-1.0.0.85-6.fc44.i686` is available; Steam is i686 and needs multilib. |
+| RPM Fusion nonfree repository metadata | Steam is available in nonfree (the CI build installed `1.0.0.87-4`); Steam is i686 and needs multilib. |
 | Fedora Kinoite documentation | Kinoite is the Fedora Atomic KDE image; the base is immutable and uses the Fedora KDE stack. |
 | Fedora Kinoite CI workaround YAML | `fedora-kinoite-plasmalogin-workaround` only repairs missing shadow/gshadow entries before plasmalogin starts; it does not reset the greeter wallpaper. |
 | Flatpak `flatpak-preinstall` manual | `.preinstall` GKeyFile format (`[Flatpak Preinstall <id>]`, `Branch`, `IsRuntime`, optional `CollectionID`); first-boot install and opt-out behavior. |
@@ -137,7 +137,13 @@ Jupiter is now a single NVIDIA-only KDE Plasma bootc image:
     Kinoite. `/etc/system-release-cpe` is left as Fedora platform CPE metadata
     for vulnerability tooling; KDE does not display it.
 
-13. **Flathub remote at build time.** The base image already ships the Flathub
+13. **`/opt` and Vesktop.** The Fedora base symlinks `/opt` to `/var/opt`, and
+    bootc only applies initial `/var` content on first install. Vesktop's RPM
+    installs to `/opt/Vesktop`, so the Containerfile makes `/opt` a real
+    immutable directory first (the template's documented `[IM]MUTABLE /opt`
+    step). Without it, the RPM fails with `cpio: mkdir failed`.
+
+14. **Flathub remote at build time.** The base image already ships the Flathub
     vendor remote at `/etc/flatpak/remotes.d/flathub.flatpakrepo`. Running
     `flatpak remote-add --system` would write `/var/lib/flatpak` during the
     build; bootc applies initial `/var` content only on first install and lint
